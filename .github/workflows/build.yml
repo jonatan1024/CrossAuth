@@ -46,4 +46,4 @@ jobs:
         id: upload-job
         with:
           name: linux32
-          path: Release/crossauth_mm_i486.so
+          path: Release/crossauth_mm_i386.so
