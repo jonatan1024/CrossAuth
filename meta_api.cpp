@@ -19,15 +19,15 @@ enginefuncs_t *g_pengfuncsTable;
 
 plugin_info_t Plugin_info =
 {
-	META_INTERFACE_VERSION,			// ifvers
-	"CrossAuth",					// name
-	"0.1",							// version
-	__DATE__,						// date
-	"jonatan1024",					// author
-	"http://",						// url
-	"XAUTH",						// logtag
-	PT_CHANGELEVEL,					// (when) loadable
-	PT_ANYTIME,						// (when) unloadable
+	META_INTERFACE_VERSION,							// ifvers
+	"CrossAuth",									// name
+	"0.1",											// version
+	__DATE__,										// date
+	"jonatan1024",									// author
+	"https://github.com/jonatan1024/CrossAuth/",	// url
+	"XAUTH",										// logtag
+	PT_CHANGELEVEL,									// (when) loadable
+	PT_ANYTIME,										// (when) unloadable
 };
 
 C_DLLEXPORT int Meta_Query(char *interfaceVersion, plugin_info_t **plinfo, mutil_funcs_t *pMetaUtilFuncs)
