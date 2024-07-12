@@ -6,6 +6,8 @@ on:
 jobs:
   windows:
     runs-on: windows-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -32,6 +34,8 @@ jobs:
     container: s1lentq/linux86buildtools:latest
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
