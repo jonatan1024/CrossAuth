@@ -21,7 +21,7 @@ plugin_info_t Plugin_info =
 {
 	META_INTERFACE_VERSION,							// ifvers
 	"CrossAuth",									// name
-	"0.1",											// version
+	"1.0.0",										// version
 	__DATE__,										// date
 	"jonatan1024",									// author
 	"https://github.com/jonatan1024/CrossAuth/",	// url
@@ -51,23 +51,20 @@ META_FUNCTIONS gMetaFunctionTable =
 
 int gOriginalAppId = 0;
 int gPort = 0;
+const int portOffset = 4;
 CUtlVector<int*> gAppIds;
 
+inline bool IsAppIdStructure(const int* pAppId) {
+	return *pAppId == gOriginalAppId && pAppId != &gOriginalAppId && *(pAppId + portOffset) == gPort;
+}
+
 void FindAppIdInPage(void* address, int size) {
-	const int portOffset = 4;
-	const int patternSize = sizeof(int) * portOffset;
-	const void* pEnd = (const char*)address + size - patternSize;
+	const int structureSize = sizeof(int) * (portOffset + 1);
+	const void* pEnd = (const char*)address + size - structureSize;
 
-	for(int* pCurrent = (int*)address; pCurrent < pEnd; pCurrent++) {
-		if(*pCurrent != gOriginalAppId)
-			continue;
-		if(pCurrent == &gOriginalAppId)
-			continue;
-		if(*(pCurrent + portOffset) != gPort)
-			continue;
-
-		gAppIds.AddToTail(pCurrent);
-	}
+	for(int* pCurrent = (int*)address; pCurrent < pEnd; pCurrent++)
+		if(IsAppIdStructure(pCurrent))
+			gAppIds.AddToTail(pCurrent);
 }
 
 void SV_ActivateServer_hook(IRehldsHook_SV_ActivateServer* chain, int runPhysics) {
@@ -110,9 +107,14 @@ void SV_ActivateServer_hook(IRehldsHook_SV_ActivateServer* chain, int runPhysics
 	SERVER_PRINT("\tSuccessfully found!\n");
 }
 
-void RescanAppIds() {
-	gAppIds.RemoveAll();
-	EnumeratePages(&FindAppIdInPage);	
+void ValidateAppIds() {
+	for(int i = 0; i < gAppIds.Count(); i++) {
+		if(!IsAddressValid(gAppIds[i]) || !IsAppIdStructure(gAppIds[i])) {
+			SERVER_PRINT("Discarding previously found SteamClient AppId structure, as it is no longer valid!\n");
+			gAppIds.FastRemove(i);
+			i--;
+		}
+	}
 }
 
 qboolean Steam_NotifyClientConnect_hook(IRehldsHook_Steam_NotifyClientConnect* chain, IGameClient* client, const void* pvSteam2Key, unsigned int ucbSteam2Key) {
@@ -120,8 +122,10 @@ qboolean Steam_NotifyClientConnect_hook(IRehldsHook_Steam_NotifyClientConnect* c
 	if(ucbSteam2Key >= 0x30)
 		clientAppId = *(const int*)((const char*)pvSteam2Key + 0x2C);
 
-	if(gAppIds.Count() > 1)
-		RescanAppIds();
+	ValidateAppIds();
+
+	if(clientAppId != gOriginalAppId && !gAppIds.Count())
+		SERVER_PRINT("CrossAuth is disabled! Connecting player might get rejected!\n");
 	
 	for(int iAppId = 0; iAppId < gAppIds.Count(); iAppId++)
 		*(gAppIds[iAppId]) = clientAppId;
