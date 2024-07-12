@@ -20,13 +20,11 @@ jobs:
           msbuild msvc/crossauth.sln -p:Configuration=Release /t:Build /p:Platform=Win32
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            msvc\Release\crossauth.dll
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            msvc/Release/crossauth.dll
 
   linux:
     name: 'Linux'
@@ -45,10 +43,8 @@ jobs:
           make
         
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
             Release/crossauth_mm_i386.so
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
