@@ -18,14 +18,14 @@ Simply grab a binary from [the latest release](https://github.com/jonatan1024/Cr
 
 ### Windows
 
-Download `win32.zip` and extract `crossauth.dll` into `addons/crossauth`. Then append into `plugins.ini` this line:
+Download and copy `crossauth.dll` into `addons/crossauth`. Then append into `plugins.ini` this line:
 ```ini
 win32 addons\crossauth\crossauth.dll
 ```
 
 ### Linux
 
-Download `linux.zip` and extract `crossauth_mm_i386.so` into `addons/crossauth`. Then append into `plugins.ini` this line:
+Download and copy `crossauth_mm_i386.so` into `addons/crossauth`. Then append into `plugins.ini` this line:
 ```ini
 linux addons/crossauth/crossauth_mm_i386.so
 ```
